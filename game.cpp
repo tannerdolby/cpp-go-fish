@@ -31,7 +31,7 @@ using namespace std;
 
 // Go Fish is over when one player runs out of cards or there are no more cards in the pool.
 // The winner is then determined by who has the most piles or suits of cards in front of them.
-// Where a "suit" is 4 of the same card number
+// Where a "book" is 4 of the same card number
 // https://www.ducksters.com/games/go_fish_rules.php
 
 
@@ -58,7 +58,7 @@ struct Player
 	int movesToWin;
 	Node cards[7];
 	vector<int> hand;
-	int suits;
+	int books;
 	Player *link;
 };
 typedef Player *playerPtr;
@@ -80,13 +80,13 @@ void eraseElem(vector<int>&, int);
 void dealStartingHand(vector<int>&, nodePtr&, Player[]);
 void populateVec(vector<int>&, int);
 void classifyCard(int, bool);
-void printCard(Player[], int, int, bool); // use or remove!
+void printCard(Player[], int, int, bool);
 int choiceToNum(string choice);
 string askMove(Player[], bool);
 void ask(Player[], bool, string);
 void handle(Player[], bool, string, int);
 int exchange(Player[], int, int, int);
-void checkForSuits(Player Players[], bool playerOneTurn);
+void checkForBooks(Player Players[], bool playerOneTurn);
 int isAHandEmpty(Player[], int);
 void getCurrentTime();
 
@@ -99,11 +99,11 @@ int main()
 	bool gameOver = false;
 	char playAgain = 'N';
 	int cardsInDeck = 0;
-	int numPlayers = 2; // Setup for one player versus the computer
+	int numPlayers = 2; // setup for one player versus the computer
 	vector<int> asks;
 	int count = 1;
 
-	// Create an output stream to write match history file
+	// create an output stream to write match history file
 	ofstream outStream;
 	outStream.open("./gofish-match-histoy.txt", ios::app);
 
@@ -118,7 +118,7 @@ int main()
 	nodePtr head;
 	head = new Node;
 
-	// Create a new Player pointer
+	// create a new Player pointer
 	playerPtr playerHead;
 	playerHead = new Player;
 
@@ -179,17 +179,18 @@ int main()
 	// of random indexes mirroring the linked list positions
 	populateVec(indexes, 52);
 
-	// random shuffle the vector representing "choices" e.g. 0-51
+	// random shuffle the vector representing card "choices" e.g. 0-51
 	// while the linked lists is where the actual deck is,
 	// this vector `indexes` keeps track of cards drawn
 	// so I can fetch nodes at the given index in the linked list
+	// more easily
 	random_shuffle(indexes.begin(), indexes.end());
 
 	// deal both players 7 cards to start (2 players)
 	// if 3 or more players deal 5 cards to each
 	dealStartingHand(indexes, head, Players);
 
-	cardsInDeck = indexes.size(); // 38 (52 - (7 + 7))
+	cardsInDeck = indexes.size();
 
 	cout << "7 cards have been randomly dealt to each player" << endl;
 	cout << "There are " << cardsInDeck << " cards left in the deck" << endl;
@@ -215,9 +216,8 @@ int main()
 
 		int cardsToGive = 0;
 
-		// handle making piles (matches of 4)
+		// handle making piles (matches of 4 - e.g. books)
 		vector<string> gameLog;
-		//[ 9, 8, 2, Ace, Ace, Queen, Jack, Jack, 2, 6, 6, Ace, 10, King, 5, Ace ]
 
 		// Exchange cards
 		if (playerOneTurn)
@@ -225,48 +225,36 @@ int main()
 
 			cardsToGive = exchange(Players, 1, 0, choiceNum);
 			// check for suits after and exchange happens
-			checkForSuits(Players, true);
+			checkForBooks(Players, true);
 		}
 		else
 		{
 			cardsToGive = exchange(Players, 0, 1, choiceNum);
-			//checkForSuits(Players, false);
+			//checkForBooks(Players, false);
 		}
 
-		// Otherwise go fish
 		if (cardsToGive == 0)
 		{
 		    cout << "Go fish!" << endl;
 
-		    if (playerOneTurn)
-		    {
-		    	cout << Players[0].name << " draws a card from the deck" << endl;
-		    }
-		    else
-		    {
-		    	cout << Players[1].name << " draws a card from the deck" << endl;
-		    }
-
 		    // take card from the pool
 		    // get indexes vector and get the next number in the shuffled vector
-
 		    // get nthNodeNum and push it into the players hand vector
 		    int cardTakenNum = getNthNodeNum(head, indexes.front());
 
 		    if (playerOneTurn)
 		    {
+		    	cout << Players[0].name << " draws a card from the deck: " << cardTakenNum << endl;
 		        Players[0].hand.push_back(cardTakenNum);
-		        // erase the num from vector as that card is "no longer" in deck
+		        // erase the num from the front of the vector as that card is "no longer" in deck
 		        indexes.erase(indexes.begin());
 		    } else
 		    {
+		    	cout << Players[1].name << " draws a card from the deck: " << cardTakenNum << endl;
 		        Players[1].hand.push_back(cardTakenNum);
-		        // erase the num from vector as that card is "no longer" in deck
-		        // cout << indexes.size() << " b1" << endl;
 		        indexes.erase(indexes.begin());
 		    }
 		    playerOneTurn = !playerOneTurn;
-
 			cout << indexes.size() << " cards left in the deck" << endl;
 		}
 		else
@@ -275,42 +263,43 @@ int main()
 
 		}
 
-
-		// It would also be nice to know which player had the empty hand
 		if (Players[0].hand.size() == 0 || Players[1].hand.size() == 0)
 		{
 			gameOver = true;
 			int playerHandEmpty = isAHandEmpty(Players, 2);
 			// determine which players hand was empty
 			cout << "Game Over! ";
+			// use fn
 			if (playerHandEmpty == 0)
 			{
 				cout << Players[0].name << " has run out of cards" << endl;
 				cout << Players[1].name << " wins!" << endl;
-				// todo: show number of moves (game turns) winning player had, and number of suits acquired
-				outStream << Players[1].name << " wins!" << endl;
+				outStream << Players[1].name << " wins! Accumlating " << Players[0].books << " books" << endl;
 
 			}
 			else if (playerHandEmpty == 1)
 			{
 				cout << Players[1].name << " has run out of cards" << endl;
 				cout << Players[0].name << " wins!" << endl;
-				// todo: player N wins in 'X' turns with 'X' suits
-				outStream << Players[0].name << " wins! Accumulating " << Players[0].suits << "suit piles" << endl;
+				outStream << Players[0].name << " wins! Accumlating " << Players[1].books << " books" << endl;
 			}
+
 			cout  << "P1: " << Players[0].hand.size() << endl;
 			cout  << "P2: " << Players[1].hand.size() << endl;
 		}
 		else if (indexes.size() == 0)
 		{
-			// check to see who has the most "suits"
-			// that is 4 of the same number card
-			// suits should be made for players during their
-			// turn
-			// finish checkForSuits utility
-
+			if (Players[0].books > Players[1].books)
+			{
+				cout << Players[0].name << " wins!" << endl;
+				outStream << Players[0].name << " wins! Accumlating " << Players[1].books << " books" << endl;
+			}
+			else
+			{
+				cout << Players[1].name << " wins!" << endl;
+				outStream << Players[1].name << " wins! Accumlating " << Players[1].books << " books" << endl;
+			}
 		}
-
 	}
 
 	cout << indexes.size() << " indexes left to choose from!" << endl;
@@ -345,7 +334,7 @@ int isAHandEmpty(Player Players[], int numPlayers)
 	return playerIdx;
 }
 
-void checkForSuits(Player Players[], bool playerOneTurn)
+void checkForBooks(Player Players[], bool playerOneTurn)
 {
 	int cardToRemove = 0;
 	int counter = 0;
@@ -364,7 +353,6 @@ void checkForSuits(Player Players[], bool playerOneTurn)
 
 		for (int j = 0; j < occVec.size(); j++)
 		{
-			cout << j << " SHOULD MATCH and >= 4" << endl;
 			if (occVec[j] >= 4)
 			{
 				counter++;
@@ -374,63 +362,32 @@ void checkForSuits(Player Players[], bool playerOneTurn)
 
 				if (counter == 4)
 				{
-					Players[0].suits += 1;
+					Players[0].books += 1;
+					cout << Players[0].name << " has a book and places the pile in front of them! Obtained four of card: " << cardToRemove << endl;
 				}
-				else if (counter > 4) {
-					// more than one suit was in a hand, reset counter
-					counter = 1;
-				}
-
+				// todo: reset count for more than one book in a hand at a time
 
 				vector<int>::iterator itr = Players[0].hand.begin() + (j - offset);
-				cout << j << " the control variable" << endl;
-				cout << "p0.5 " << Players[0].hand[j] << endl;
-				cout << "p1 " << Players[0].hand[j - offset] << endl;
-				cout << "p2 " << cardToRemove << endl;
-				//[ Jack, Jack, 7, 3, Ace, 10, King, 7, 9, 9, 6, 2, King, King, Jack, Ace, 3, 2, 4, King ]
 
-				// last card is off by one index it need j-- not sure why though, maybe offset isn't
-				// getting incremented on second to last card to be erased?
 				while (Players[0].hand[j - offset] == cardToRemove)
 				{
-					cout << " in while loop" << endl;
 				    offset++;
 				    if (itr == Players[0].hand.end()-1)
 				    {
-				    	cout << "is last card" << endl;
-				    	cout << "first pop back" << endl;
 				        Players[0].hand.pop_back();
-				        // here goes nothing
-				        occVec.pop_back();
-				        break;
 				    }
 				    else
 				    {
-				    	// do some printing to fix the 4th card not being removed
-				    	cout << "else not initially last card" << endl;
-
-				        // if the card to be erased is the last card in the vector
-				        // use pop_back() to remove it
-				        if ((itr == Players[0].hand.end()) & (*itr == cardToRemove))
-				        {
-				        	cout << "is last card now" << endl;
-				        	cout << "last pop_back()" << endl;
-				            Players[0].hand.pop_back();
-				            occVec.pop_back();
-				        }
-
 				        while ((itr != Players[0].hand.end()-1) & (*itr == cardToRemove))
 				        {
-				        	cout << "is not last card" << endl;
-				        	cout << "reg erase" << endl;
-				            Players[0].hand.erase(itr);
-				            occVec.erase(itr);
+				            if (itr != Players[0].hand.end())
+				            {
+				                Players[0].hand.erase(itr);
+				            }
+				            break;
 				        }
 				    }
 				}
-				cout << "Player 1 cards (" << Players[0].hand.size() << ")";
-				displayHand(Players, 0);
-
 			}
 		}
 	}
@@ -769,7 +726,7 @@ void printCard(Player Players[], int playerIndex, int index, bool last) {
 
 void displayHand(Player Players[], int index)
 {
-	cout << "No of Suits: " << Players[index].suits << endl;
+	cout << "No of Books: " << Players[index].books << endl;
 	cout << "[ ";
 	for (int i = 0; i < Players[index].hand.size(); i++)
 	{
@@ -816,7 +773,7 @@ void initGame(Player Players[], int numPlayers)
 	// each player starts with 7 cards if there are 3 or fewer players (Player One vs AI)
 	for (int i = 0; i < numPlayers; i++)
 	{
-		Players[i].suits = 0;
+		Players[i].books = 0;
 		Players[i].numCards = 7;
 	}
 }
