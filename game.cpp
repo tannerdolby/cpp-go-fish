@@ -263,58 +263,53 @@ int main()
 
 		}
 
+		// Try to get the date in the match history output stream
+		auto start = std::chrono::system_clock::now();
+		std::time_t time = std::chrono::system_clock::to_time_t(start);
+
 		if (Players[0].hand.size() == 0 || Players[1].hand.size() == 0)
 		{
-			gameOver = true;
-			int playerHandEmpty = isAHandEmpty(Players, 2);
-			// determine which players hand was empty
 			cout << "Game Over! ";
-			// use fn
+			gameOver = true;
+
+			int playerHandEmpty = isAHandEmpty(Players, 2);
+
 			if (playerHandEmpty == 0)
 			{
 				cout << Players[0].name << " has run out of cards" << endl;
 				cout << Players[1].name << " wins!" << endl;
-				outStream << Players[1].name << " wins! Accumlating " << Players[0].books << " books" << endl;
+
+				cout << endl << outStream << Players[1].name << " wins! Accumlating " << Players[0].books << " books - Date: " << ctime(&time) << endl;
+
 
 			}
 			else if (playerHandEmpty == 1)
 			{
 				cout << Players[1].name << " has run out of cards" << endl;
 				cout << Players[0].name << " wins!" << endl;
-				outStream << Players[0].name << " wins! Accumlating " << Players[1].books << " books" << endl;
+				cout << endl << outStream << Players[0].name << " wins! Accumlating " << Players[1].books << " books - Date: " << ctime(&time) << endl;
 			}
-
-			cout  << "P1: " << Players[0].hand.size() << endl;
-			cout  << "P2: " << Players[1].hand.size() << endl;
 		}
 		else if (indexes.size() == 0)
 		{
 			if (Players[0].books > Players[1].books)
 			{
 				cout << Players[0].name << " wins!" << endl;
-				outStream << Players[0].name << " wins! Accumlating " << Players[1].books << " books" << endl;
+				cout << endl << outStream << Players[0].name << " wins! Accumlating " << Players[0].books << " books - Date: " << ctime(&time) << endl;
 			}
 			else
 			{
 				cout << Players[1].name << " wins!" << endl;
-				outStream << Players[1].name << " wins! Accumlating " << Players[1].books << " books" << endl;
+				cout << endl << outStream << Players[1].name << " wins! Accumlating " << Players[1].books << " books - Date: " << ctime(&time) << endl;
 			}
+			gameOver = true;
+			break;
 		}
 	}
 
-	cout << indexes.size() << " indexes left to choose from!" << endl;
-
-	// iterate through the linked list representing original stack of cards
-	//while (tempPtr != NULL)
-	//{
-		//cout << "Card Num/Val: " << tempPtr -> cardNum << " Suit: " << tempPtr -> cardSuit;
-		//cout << " - Spec: " << tempPtr -> cardVal << endl;
-		//tempPtr = tempPtr -> link;
-		//len++;
-	//}
-
 	return 0;
 }
+
 // Check if a players hand is empty and return the player index
 int isAHandEmpty(Player Players[], int numPlayers)
 {
@@ -363,9 +358,10 @@ void checkForBooks(Player Players[], bool playerOneTurn)
 				if (counter == 4)
 				{
 					Players[0].books += 1;
-					cout << Players[0].name << " has a book and places the pile in front of them! Obtained four of card: " << cardToRemove << endl;
+					cout << Players[0].name << " has a book! Obtained four of card: " << classifyCard(cardToRemove, true) << endl;
 				}
-				// todo: reset count for more than one book in a hand at a time
+
+				// todo: account for more than one book in a hand at a time
 
 				vector<int>::iterator itr = Players[0].hand.begin() + (j - offset);
 
