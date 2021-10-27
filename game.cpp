@@ -260,25 +260,29 @@ int main()
 
 			if (Players[0].hand.size() == 0 || Players[1].hand.size() == 0)
 			{
-				cout << "Game Over! ";
+				cout << "Game Over! A player has run out of cards" << endl;
 				gameOver = true;
 
-				int playerHandEmpty = isAHandEmpty(Players, 2);
-
-
-				if (playerHandEmpty == 0)
+				if (Players[0].books > Players[1].books)
 				{
+					cout << Players[0].name << " wins! \nResults: " << Players[1].name << ": " << Players[1].books << " books and "<< Players[0].name << ": " << Players[0].books << " books" <<  endl;
 					displayEmptyHandMsg(Players, 0);
-					outStream << Players[1].name << " wins with " << Players[1].books << " " << word << " - Date: " << ctime(&time);
+					outStream << Players[0].name << " wins with  " << Players[0].books << " " << word << " - Date: " << ctime(&time) << endl;
 				}
-				else if (playerHandEmpty == 1)
+				else if (Players[0].books < Players[1].books)
 				{
+					cout << Players[1].name << " wins! \nResults: " << Players[1].name << ": " << Players[1].books << " books and "<< Players[0].name << ": " << Players[0].books << " books" <<  endl;
 					displayEmptyHandMsg(Players, 1);
-					outStream << Players[0].name << " wins with " << Players[0].books << " " << word << " - Date: " << ctime(&time);
+					outStream << Players[1].name << " wins with " << Players[1].books << " " << word << " - Date: " << ctime(&time) << endl;
+				} else
+				{
+					cout << "Its a tie!" << endl;
+					cout << Players[1].name << ": " << Players[1].books << " books and "<< Players[0].name << ": " << Players[0].books << "books" <<  endl;
 				}
 			}
 			else if (indexes.size() == 0)
 			{
+				cout << "Game over! The deck is empty" << endl;
 
 				if (Players[0].books > Players[1].books)
 				{
@@ -295,7 +299,6 @@ int main()
 					cout << Players[1].name << ": " << Players[1].books << " books and "<< Players[0].name << ": " << Players[0].books << "books" <<  endl;
 
 				}
-				cout << "Game over! The deck is empty" << endl;
 				gameOver = true;
 			}
 	    }
@@ -545,10 +548,8 @@ void deleteNode(nodePtr& head, int index)
 void displayEmptyHandMsg(Player Players[], int playerWithEmptyHand) {
     if (playerWithEmptyHand == 0) {
         cout << Players[0].name << " has run out of cards" << endl;
-        cout << Players[1].name << " wins! \nResults: " << Players[1].name << ": " << Players[1].books << " books, "<< Players[0].name << ": " << Players[0].books << " books" <<  endl;
     } else {
         cout << Players[1].name << " has run out of cards" << endl;
-        cout << Players[0].name << " wins! \nResults: " << Players[0].name << ": " << Players[0].books << " books, "<< Players[1].name << ": " << Players[1].books << " books" <<  endl;
     }
 }
 
