@@ -193,9 +193,9 @@ int main()
 	cout << "There are " << cardsInDeck << " cards left in the deck" << endl;
 
 	// Display initial hand of cards for both players
-	cout << Players[0].name << "'s cards: (" << Players[0].hand.size() << ") ";
+	cout << Players[0].name << "'s cards: (" << Players[0].hand.size() << ")";
 //	displayHand(Players, 0);
-	cout << endl << Players[1].name << "'s cards: (" << Players[1].hand.size() <<  ") its a secret!" << endl;
+	cout << endl << Players[1].name << "'s cards: (" << Players[1].hand.size() <<  ")" << endl;
 //	displayHand(Players, 1);
 	cout << "\nLet the games begin!\n" << endl;
 
