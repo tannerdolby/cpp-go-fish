@@ -3,4 +3,14 @@ AI wins with 2 books - Date: Tue Oct 26 18:17:30 2021
 Finch wins with 3 books - Date: Tue Oct 26 18:26:48 2021
 Tanner wins with 1 book - Date: Tue Oct 26 21:11:58 2021
 AI wins with 4 books - Date: Tue Oct 26 22:01:46 2021
-Tanner wins with  6 books - Date: Tue Oct 26 22:55:12 2021
+AI wins with 5 books - Date: Wed Oct 27 12:28:02 2021
+Tanner wins with 1 book - Date: Wed Oct 27 13:48:08 2021
+Tanner wins with 0 book - Date: Wed Oct 27 14:47:16 2021
+AI wins with 6 books - Date: Wed Oct 27 14:53:47 2021
+Tanner wins with 1 book - Date: Wed Oct 27 15:11:21 2021
+Tanner wins with 5 books - Date: Wed Oct 27 15:16:20 2021
+AI wins with 6 books - Date: Wed Oct 27 15:25:06 2021
+Tanner wins with 2 books - Date: Wed Oct 27 15:32:50 2021
+Tanner wins with 1 book - Date: Wed Oct 27 15:39:01 2021
+Tanner wins with 2 books - Date: Wed Oct 27 15:59:03 2021
+Tanner wins with 0 books - Date: Wed Oct 27 16:00:11 2021
