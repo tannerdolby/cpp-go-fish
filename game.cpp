@@ -1,7 +1,7 @@
 /*
  * gofish.cpp
  *
- *  Created on: Oct 11, 2021
+ *  Created on: Oct 26, 2021
  *      Author: TannerDolby
  */
 #include <iostream>
@@ -82,13 +82,15 @@ void populateVec(vector<int>&, int);
 void classifyCard(int, bool);
 void printCard(Player[], int, int, bool);
 int choiceToNum(string choice);
-string askMove(Player[], bool);
+string numToChoice(int choice);
+string askMove(Player[], bool, int);
 void ask(Player[], bool, string);
 void handle(Player[], bool, string, int);
 int exchange(Player[], int, int, int);
-void checkForBooks(Player Players[], bool playerOneTurn);
+void checkForBooks(Player[], int);
 int isAHandEmpty(Player[], int);
 void getCurrentTime();
+void displayEmptyHandMsg(Player[], int);
 
 int STANDARD_DECK = 52;
 
@@ -105,7 +107,7 @@ int main()
 
 	// create an output stream to write match history file
 	ofstream outStream;
-	outStream.open("./gofish-match-histoy.txt", ios::app);
+	outStream.open("match-history.txt", ios::app);
 
 	// initialize array of structs representing the 4 card suits
 	suits Suits[4];
@@ -207,7 +209,9 @@ int main()
 
 		string choice = "";
 		int choiceNum = 0;
-		string fishingCard = askMove(Players, playerOneTurn);
+		string word = "books";
+		int rootsChoice = (rand() % 13) + 1;
+		string fishingCard = askMove(Players, playerOneTurn, rootsChoice);
 
 		// Start fishing for cards
 		cout << endl;
@@ -216,21 +220,16 @@ int main()
 
 		int cardsToGive = 0;
 
-		// handle making piles (matches of 4 - e.g. books)
-		vector<string> gameLog;
-
 		// Exchange cards
 		if (playerOneTurn)
 		{
-
 			cardsToGive = exchange(Players, 1, 0, choiceNum);
-			// check for suits after and exchange happens
-			checkForBooks(Players, true);
+			checkForBooks(Players, 0);
 		}
 		else
 		{
 			cardsToGive = exchange(Players, 0, 1, choiceNum);
-			//checkForBooks(Players, false);
+			checkForBooks(Players, 1);
 		}
 
 		if (cardsToGive == 0)
@@ -263,9 +262,12 @@ int main()
 
 		}
 
-		// Try to get the date in the match history output stream
 		auto start = std::chrono::system_clock::now();
 		std::time_t time = std::chrono::system_clock::to_time_t(start);
+
+		if (Players[0].books == 1 || Players[1].books == 1) {
+		    word = "book";
+		}
 
 		if (Players[0].hand.size() == 0 || Players[1].hand.size() == 0)
 		{
@@ -274,33 +276,30 @@ int main()
 
 			int playerHandEmpty = isAHandEmpty(Players, 2);
 
+
 			if (playerHandEmpty == 0)
 			{
-				cout << Players[0].name << " has run out of cards" << endl;
-				cout << Players[1].name << " wins!" << endl;
-
-				cout << endl << outStream << Players[1].name << " wins! Accumlating " << Players[0].books << " books - Date: " << ctime(&time) << endl;
-
-
+				displayEmptyHandMsg(Players, 0);
+				outStream << Players[1].name << " wins with " << Players[1].books << " " << word << " - Date: " << ctime(&time);
 			}
 			else if (playerHandEmpty == 1)
 			{
-				cout << Players[1].name << " has run out of cards" << endl;
-				cout << Players[0].name << " wins!" << endl;
-				cout << endl << outStream << Players[0].name << " wins! Accumlating " << Players[1].books << " books - Date: " << ctime(&time) << endl;
+				displayEmptyHandMsg(Players, 1);
+				outStream << Players[0].name << " wins with " << Players[0].books << " books - Date: " << ctime(&time);
 			}
 		}
 		else if (indexes.size() == 0)
 		{
+
 			if (Players[0].books > Players[1].books)
 			{
 				cout << Players[0].name << " wins!" << endl;
-				cout << endl << outStream << Players[0].name << " wins! Accumlating " << Players[0].books << " books - Date: " << ctime(&time) << endl;
+				outStream << Players[0].name << " wins with  " << Players[0].books << " " << word << " - Date: " << ctime(&time) << endl;
 			}
 			else
 			{
 				cout << Players[1].name << " wins!" << endl;
-				cout << endl << outStream << Players[1].name << " wins! Accumlating " << Players[1].books << " books - Date: " << ctime(&time) << endl;
+				outStream << Players[1].name << " wins with " << Players[1].books << " " << word << " - Date: " << ctime(&time) << endl;
 			}
 			gameOver = true;
 			break;
@@ -318,7 +317,6 @@ int isAHandEmpty(Player Players[], int numPlayers)
 	bool isEmpty = false;
 	for (int i = 0; i < numPlayers; i++)
 	{
-		cout << Players[i].hand.size() << endl;
 		if (Players[i].hand.size() == 0)
 		{
 			isEmpty = true;
@@ -329,63 +327,67 @@ int isAHandEmpty(Player Players[], int numPlayers)
 	return playerIdx;
 }
 
-void checkForBooks(Player Players[], bool playerOneTurn)
+void checkForBooks(Player Players[], int index)
 {
-	int cardToRemove = 0;
-	int counter = 0;
 	vector<int> occVec;
 	vector<int> occVecPreserved;
 	vector<int> suitLog;
+	int cardToRemove = 0;
+	int counter = 0;
 	int offset = 0;
-	if (playerOneTurn)
+	string word = "books";
+
+	if (Players[0].books == 1 || Players[1].books == 1) {
+	    word = "book";
+	}
+
+	for (int i = 0; i < Players[index].hand.size(); i++)
 	{
-		for (int i = 0; i < Players[0].hand.size(); i++)
-		{
-			int occurences = count(Players[0].hand.begin(), Players[0].hand.end(), Players[0].hand[i]);
-			occVec.push_back(occurences);
-			occVecPreserved.push_back(Players[0].hand[i]);
-		}
+	    int occurences = count(Players[index].hand.begin(), Players[index].hand.end(), Players[index].hand[i]);
+	    occVec.push_back(occurences);
+	    occVecPreserved.push_back(Players[index].hand[i]);
+	}
 
-		for (int j = 0; j < occVec.size(); j++)
-		{
-			if (occVec[j] >= 4)
-			{
-				counter++;
-				cardToRemove = occVecPreserved[j];
-				// keep track of which suits are accumulated for match history
-				suitLog.push_back(cardToRemove);
+	for (int j = 0; j < occVec.size(); j++)
+	{
+	    if (occVec[j] >= 4)
+	    {
+	        counter++;
+	        cardToRemove = occVecPreserved[j];
+	        // keep track of which suits are accumulated for match history
+	        suitLog.push_back(cardToRemove);
 
-				if (counter == 4)
-				{
-					Players[0].books += 1;
-					cout << Players[0].name << " has a book! Obtained four of card: " << classifyCard(cardToRemove, true) << endl;
-				}
+	        if (counter == 4)
+	        {
+	            Players[index].books += 1;
+	            cout << Players[index].name << " has a book! Obtained four of card: ";
+	            classifyCard(cardToRemove, true);
+	            cout << endl;
+	        }
 
-				// todo: account for more than one book in a hand at a time
+	        vector<int>::iterator itr = Players[index].hand.begin() + (j - offset);
 
-				vector<int>::iterator itr = Players[0].hand.begin() + (j - offset);
-
-				while (Players[0].hand[j - offset] == cardToRemove)
-				{
-				    offset++;
-				    if (itr == Players[0].hand.end()-1)
-				    {
-				        Players[0].hand.pop_back();
-				    }
-				    else
-				    {
-				        while ((itr != Players[0].hand.end()-1) & (*itr == cardToRemove))
-				        {
-				            if (itr != Players[0].hand.end())
-				            {
-				                Players[0].hand.erase(itr);
-				            }
-				            break;
-				        }
-				    }
-				}
-			}
-		}
+	        // todo: account for more than one book in a hand at a time
+	        while (Players[index].hand[j - offset] == cardToRemove)
+	        {
+	            offset++;
+	            if (itr == Players[index].hand.end()-1)
+	            {
+	                Players[index].hand.pop_back();
+	            }
+	            else
+	            {
+	                while ((itr != Players[index].hand.end()-1) & (*itr == cardToRemove))
+	                {
+	                    if (itr != Players[index].hand.end())
+	                    {
+	                        Players[index].hand.erase(itr);
+	                    }
+	                    break;
+	                }
+	            }
+	        }
+	    }
 	}
 }
 
@@ -456,7 +458,7 @@ void ask(Player Players[], bool playerOneTurn, string choice)
 
 }
 
-string askMove(Player Players[], bool playerOneTurn)
+string askMove(Player Players[], bool playerOneTurn, int rootsChoice)
 {
 	string choice = "";
 	if (playerOneTurn)
@@ -471,7 +473,7 @@ string askMove(Player Players[], bool playerOneTurn)
 		cout << Players[1].name << "'s cards: (" << Players[1].hand.size() << ")";
 		displayHand(Players, 1);
 		cout << endl << Players[1].name << ": what card do you wish to ask " << Players[0].name << " for?" << endl;
-		cin >> choice;
+		choice = numToChoice(rootsChoice);
 	}
 	return choice;
 }
@@ -538,6 +540,16 @@ void deleteNode(nodePtr& head, int index)
 
 	// Unlink the deleted node
 	temp -> link = link;
+}
+
+void displayEmptyHandMsg(Player Players[], int playerWithEmptyHand) {
+    if (playerWithEmptyHand == 0) {
+        cout << Players[0].name << " has run out of cards" << endl;
+        cout << Players[1].name << " wins!" << endl;
+    } else {
+        cout << Players[1].name << " has run out of cards" << endl;
+        cout << Players[0].name << " wins!" << endl;
+    }
 }
 
 void dealStartingHand(vector<int>& indexes, nodePtr& head, Player Players[])
@@ -633,7 +645,6 @@ string getNthNodeSuit(nodePtr& head, int index)
 		count++;
 		current = current -> link;
 	}
-	// bail when trying to get a non existent node
 	assert(0);
 }
 
@@ -722,7 +733,7 @@ void printCard(Player Players[], int playerIndex, int index, bool last) {
 
 void displayHand(Player Players[], int index)
 {
-	cout << "No of Books: " << Players[index].books << endl;
+	cout << "No. of Books: " << Players[index].books << endl;
 	cout << "[ ";
 	for (int i = 0; i < Players[index].hand.size(); i++)
 	{
@@ -762,7 +773,7 @@ void initGame(Player Players[], int numPlayers)
 	getCurrentTime();
 	cout << "Enter a name for Player 1: " << endl;
 	cin >> Players[0].name;
-	Players[1].name = "AI";
+	Players[1].name = "Root";
 	cout << "Player 1: " << Players[0].name << endl;
 	cout << "Player 2: " << Players[1].name << endl;
 	cout << "Goodluck!" << endl;
@@ -828,6 +839,64 @@ int choiceToNum(string choice)
 	else if (choice == "King")
 	{
 		choiceNum = 13;
+	}
+	return choiceNum;
+}
+
+string numToChoice(int choice)
+{
+	string choiceNum = "";
+	if (choice == 1)
+	{
+		choiceNum = "Ace";
+	}
+	else if (choice == 2)
+	{
+		choiceNum = "2";
+	}
+	else if (choice == 3)
+	{
+		choiceNum = "3";
+	}
+	else if (choice == 4)
+	{
+		choiceNum = "4";
+	}
+	else if (choice == 5)
+	{
+		choiceNum = "5";
+	}
+	else if (choice == 6)
+	{
+		choiceNum = "6";
+	}
+	else if (choice == 7)
+	{
+		choiceNum = "7";
+	}
+	else if (choice == 8)
+	{
+		choiceNum = "8";
+	}
+	else if (choice == 9)
+	{
+		choiceNum = "9";
+	}
+	else if (choice == 10)
+	{
+		choiceNum = "10";
+	}
+	else if (choice == 11)
+	{
+		choiceNum = "Jack";
+	}
+	else if (choice == 12)
+	{
+		choiceNum = "Queen";
+	}
+	else if (choice == 13)
+	{
+		choiceNum = "King";
 	}
 	return choiceNum;
 }
