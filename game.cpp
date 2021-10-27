@@ -22,23 +22,18 @@
 using namespace std;
 
 
-// What is Go Fish?
-// Go Fish is a card game usually played by 2-5 players
+/*
+ * What is Go Fish?
+ * Go Fish is a card game usually played by 2-5 players
+ * A standard deck of cards has four suites: hearts, clubs, spades, diamonds.
+ * Each suite has thirteen cards: ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, jack, queen and king.
+ * Thus the entire deck has 52 cards total.
+ *
+ * Go Fish is over when one player runs out of cards or there are no more cards in the pool.
+ * The winner is then determined by who has the most piles or suits of cards in front of them.
+ * Where a "book" is 4 of the same card number - Reference: https://www.ducksters.com/games/go_fish_rules.php
+ */
 
-// A standard deck of cards has four suites: hearts, clubs, spades, diamonds.
-// Each suite has thirteen cards: ace, 2, 3, 4, 5, 6, 7, 8, 9, 10, jack, queen and king.
-// Thus the entire deck has 52 cards total.
-
-// Go Fish is over when one player runs out of cards or there are no more cards in the pool.
-// The winner is then determined by who has the most piles or suits of cards in front of them.
-// Where a "book" is 4 of the same card number
-// https://www.ducksters.com/games/go_fish_rules.php
-
-
-// another good reference for better/advanced rules
-// https://playingcarddecks.com/blogs/how-to-play/go-fish-game-rules
-
-// Cards are the nodes in the linked list
 struct Node
 {
 	int cardNum;
@@ -101,7 +96,7 @@ int main()
 	bool gameOver = false;
 	char playAgain = 'N';
 	int cardsInDeck = 0;
-	int numPlayers = 2; // setup for one player versus the computer
+	int numPlayers = 2;
 	vector<int> asks;
 	int count = 1;
 
@@ -184,7 +179,7 @@ int main()
 	// random shuffle the vector representing card "choices" e.g. 0-51
 	// while the linked lists is where the actual deck is,
 	// this vector `indexes` keeps track of cards drawn
-	// so I can fetch nodes at the given index in the linked list
+	// so I can get nodes at the given index in the linked list
 	// more easily
 	random_shuffle(indexes.begin(), indexes.end());
 
@@ -199,9 +194,9 @@ int main()
 
 	// Display initial hand of cards for both players
 	cout << Players[0].name << "'s cards: (" << Players[0].hand.size() << ") ";
-	displayHand(Players, 0);
+//	displayHand(Players, 0);
 	cout << endl << Players[1].name << "'s cards: (" << Players[1].hand.size() <<  ") its a secret!" << endl;
-	displayHand(Players, 1);
+//	displayHand(Players, 1);
 	cout << "\nLet the games begin!\n" << endl;
 
 	while (gameOver == false)
@@ -285,7 +280,7 @@ int main()
 			else if (playerHandEmpty == 1)
 			{
 				displayEmptyHandMsg(Players, 1);
-				outStream << Players[0].name << " wins with " << Players[0].books << " books - Date: " << ctime(&time);
+				outStream << Players[0].name << " wins with " << Players[0].books << " " << word << " - Date: " << ctime(&time);
 			}
 		}
 		else if (indexes.size() == 0)
@@ -458,9 +453,10 @@ void ask(Player Players[], bool playerOneTurn, string choice)
 
 }
 
-string askMove(Player Players[], bool playerOneTurn, int rootsChoice)
+string askMove(Player Players[], bool playerOneTurn, int randomChoice)
 {
 	string choice = "";
+
 	if (playerOneTurn)
 	{
 		cout << Players[0].name << "'s cards: (" << Players[0].hand.size() << ") ";
@@ -470,10 +466,10 @@ string askMove(Player Players[], bool playerOneTurn, int rootsChoice)
 	}
 	else
 	{
-		cout << Players[1].name << "'s cards: (" << Players[1].hand.size() << ")";
+		cout << Players[1].name << "'s cards: (" << Players[1].hand.size() << ") ";
 		displayHand(Players, 1);
 		cout << endl << Players[1].name << ": what card do you wish to ask " << Players[0].name << " for?" << endl;
-		choice = numToChoice(rootsChoice);
+		choice = numToChoice(randomChoice);
 	}
 	return choice;
 }
@@ -773,7 +769,7 @@ void initGame(Player Players[], int numPlayers)
 	getCurrentTime();
 	cout << "Enter a name for Player 1: " << endl;
 	cin >> Players[0].name;
-	Players[1].name = "Root";
+	Players[1].name = "AI";
 	cout << "Player 1: " << Players[0].name << endl;
 	cout << "Player 2: " << Players[1].name << endl;
 	cout << "Goodluck!" << endl;
