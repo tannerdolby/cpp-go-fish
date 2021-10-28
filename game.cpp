@@ -195,7 +195,7 @@ int main()
 
 		while (gameOver == false)
 		{
-		    string choice = "";
+			string choice = "";
 			int choiceNum = 0;
 			string word = "books";
 			int rootsChoice = (rand() % 13) + 1;
