@@ -1,7 +1,7 @@
 /*
  * gofish.cpp
  *
- *  Created on: Oct 26, 2021
+ *  Created on: Oct 27, 2021
  *      Author: TannerDolby
  */
 #include <iostream>
@@ -183,8 +183,6 @@ int main()
 		// deal both players 7 cards to start (2 players)
 		// if 3 or more players deal 5 cards to each
 		dealStartingHand(indexes, head, Players);
-
-		cout << "fails after starting hand" << endl;
 		cardsInDeck = indexes.size();
 
 		cout << "7 cards have been randomly dealt to each player" << endl;
@@ -287,7 +285,7 @@ int main()
 				if (Players[0].books > Players[1].books)
 				{
 					cout << Players[0].name << " wins! \nResults: " << Players[1].name << ": " << Players[1].books << " books and "<< Players[0].name << ": " << Players[0].books << " books" <<  endl;
-					outStream << Players[0].name << " wins with  " << Players[0].books << " " << word << " - Date: " << ctime(&time) << endl;
+					outStream << Players[0].name << " wins with " << Players[0].books << " " << word << " - Date: " << ctime(&time) << endl;
 				}
 				else if (Players[0].books < Players[1].books)
 				{
