@@ -41,7 +41,7 @@ AI draws a card from the deck: 7
 0 cards left in the deck
 Game over! The deck is empty
 Tanner wins! 
-Results: AI: 3 books and Tanner: 6 books
+Results: Tanner: 6 books and AI: 3 books
 Do you want to play again? (Y/N)
 N
 ```
