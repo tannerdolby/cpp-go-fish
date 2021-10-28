@@ -263,7 +263,7 @@ int main()
 
 				if (Players[0].books > Players[1].books)
 				{
-					cout << Players[0].name << " wins! \nResults: " << Players[1].name << ": " << Players[1].books << " books and "<< Players[0].name << ": " << Players[0].books << " books" <<  endl;
+					cout << Players[0].name << " wins! \nResults: " << Players[0].name << ": " << Players[0].books << " books and "<< Players[1].name << ": " << Players[1].books << " books" <<  endl;
 					displayEmptyHandMsg(Players, 0);
 					outStream << Players[0].name << " wins with  " << Players[0].books << " " << word << " - Date: " << ctime(&time) << endl;
 				}
