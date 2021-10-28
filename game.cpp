@@ -195,7 +195,7 @@ int main()
 
 		while (gameOver == false)
 		{
-			string choice = "";
+		    string choice = "";
 			int choiceNum = 0;
 			string word = "books";
 			int rootsChoice = (rand() % 13) + 1;
@@ -845,58 +845,49 @@ int choiceToNum(string choice)
 string numToChoice(int choice)
 {
 	string choiceNum = "";
-	if (choice == 1)
-	{
-		choiceNum = "Ace";
+
+	switch (choice) {
+		case 1:
+			choiceNum = "Ace";
+			break;
+		case 2:
+			choiceNum = "2";
+			break;
+		case 3:
+			choiceNum = "3";
+			break;
+		case 4:
+			choiceNum = "4";
+			break;
+		case 5:
+			choiceNum = "5";
+			break;
+		case 6:
+			choiceNum = "6";
+			break;
+		case 7:
+			choiceNum = "7";
+			break;
+		case 8:
+			choiceNum = "8";
+			break;
+		case 9:
+			choiceNum = "9";
+			break;
+		case 10:
+			choiceNum = "10";
+			break;
+		case 11:
+			choiceNum = "Jack";
+			break;
+		case 12:
+			choiceNum = "Queen";
+			break;
+		case 13:
+			choiceNum = "King";
+			break;
 	}
-	else if (choice == 2)
-	{
-		choiceNum = "2";
-	}
-	else if (choice == 3)
-	{
-		choiceNum = "3";
-	}
-	else if (choice == 4)
-	{
-		choiceNum = "4";
-	}
-	else if (choice == 5)
-	{
-		choiceNum = "5";
-	}
-	else if (choice == 6)
-	{
-		choiceNum = "6";
-	}
-	else if (choice == 7)
-	{
-		choiceNum = "7";
-	}
-	else if (choice == 8)
-	{
-		choiceNum = "8";
-	}
-	else if (choice == 9)
-	{
-		choiceNum = "9";
-	}
-	else if (choice == 10)
-	{
-		choiceNum = "10";
-	}
-	else if (choice == 11)
-	{
-		choiceNum = "Jack";
-	}
-	else if (choice == 12)
-	{
-		choiceNum = "Queen";
-	}
-	else if (choice == 13)
-	{
-		choiceNum = "King";
-	}
+
 	return choiceNum;
 }
 
