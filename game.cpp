@@ -49,8 +49,6 @@ struct Player
 	string name;
 	bool isDealer;
 	int numCards;
-	int numWins;
-	int movesToWin;
 	Node cards[7];
 	vector<int> hand;
 	int books;
@@ -91,7 +89,6 @@ int STANDARD_DECK = 52;
 
 int main()
 {
-//	vector<int> indexes;
 	bool playerOneTurn = true;
 	bool gameOver = false;
 	char playAgain;
