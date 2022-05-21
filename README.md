@@ -21,10 +21,7 @@ Tanner: what card do you wish to ask AI for?
 9
 AI: do you have any 9's ?
 Go fish!
-... and the game continues
-```
-
-```
+... skipping some gampleay for readability
 Go fish!
 Tanner draws a card from the deck: 8
 1 cards left in the deck
